@@ -40,7 +40,7 @@ DEFAULT_LOG_TABLE     BOOLEAN              := TRUE;
 
 -- if DEFAULT_USE_LOG4J is TRUE log4j Log4JbackgroundProcess are necessary
 -- Causes log messages to be sent to a queue
-DEFAULT_USE_LOG4J     BOOLEAN              := TRUE;
+DEFAULT_USE_LOG4J     BOOLEAN              := FALSE;
 
 -- TRUE default value for Logging out off transactional limits
 DEFAULT_LOG_OUT_TRANS BOOLEAN              := TRUE;
