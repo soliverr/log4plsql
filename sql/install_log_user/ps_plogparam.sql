@@ -33,7 +33,7 @@ PACKAGE PLOGPARAM IS
 -- definition of the default level
 -- LERROR default level for production system
 -- LDEBUG for developement phase
-DEFAULT_LEVEL         TLOG.LLEVEL%type     := 70 ; -- LERROR
+DEFAULT_LEVEL         TLOG.LLEVEL%type     := 70 ; -- LALL
 
 -- TRUE default value for Logging in table
 DEFAULT_LOG_TABLE     BOOLEAN              := TRUE;
