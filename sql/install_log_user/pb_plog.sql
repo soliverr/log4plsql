@@ -321,6 +321,7 @@ BEGIN
 
     pCTX.isDefaultInit   := TRUE;
     pCTX.LSection        := nvl(pSECTION, getCallStack);
+    pCTX.LAction         := NULL;
     pCTX.INIT_LSECTION   := pSECTION;
     pCTX.LLEVEL          := pLEVEL;
     pCTX.INIT_LLEVEL     := pLEVEL;
@@ -435,6 +436,75 @@ BEGIN
     pCTX.LSection := substr(pCTX.LSection,1,instr(UPPER(pCTX.LSection), UPPER(pSECTION), -1)-2);
 
 END setEndSection;
+
+--******************************************************************************
+-- PROCEDURE setBeginAction
+--
+--      pCTX               log context
+--      pAction            Action node to add
+--
+--   Public. Creates a new action node in the hierarchical action.
+--   The text parameter pAction is added to the log context section.
+--
+--******************************************************************************
+PROCEDURE setBeginAction
+(
+    pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
+    pACTION       IN            VARCHAR2
+)
+IS
+BEGIN
+    checkAndInitCTX(pCTX);
+    pCTX.LAction := nvl(pCTX.LAction, '')||PLOGPARAM.DEFAULT_Section_sep||pACTION;
+
+END setBeginAction;
+
+--******************************************************************************
+--   NAME:   getAction
+--
+--   Public. Returns the action of a specific log context
+--
+--******************************************************************************
+FUNCTION getAction
+(
+    pCTX        IN PLOGPARAM.LOG_CTX
+)
+RETURN VARCHAR2
+IS
+BEGIN
+
+    RETURN pCTX.LAction;
+
+END getAction;
+
+PROCEDURE setEndAction
+(
+    pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
+    pACTION       IN            VARCHAR2  DEFAULT 'EndAllAction'
+)
+--******************************************************************************
+--   NAME:   setEndAction
+--
+--   PARAMETERS:
+--
+--      pCTX               log context
+--      pAction            action node to close
+--
+--   Public. Closes an action node of a log context. If pAction is left NULL,
+--   all nodes are closed.
+--
+--******************************************************************************
+IS
+BEGIN
+    checkAndInitCTX(pCTX);
+    IF pACTION = 'EndAllAction' THEN
+        pCTX.LAction := NULL;
+        RETURN;
+    END IF;
+
+    pCTX.LAction := substr(pCTX.LAction,1,instr(UPPER(pCTX.LAction), UPPER(pACTION), -1)-2);
+
+END setEndAction;
 
 PROCEDURE setTransactionMode
 (

@@ -49,8 +49,7 @@ PACKAGE BODY PLOG_OUT_SESSION AS
 AS
 BEGIN
     IF pCTX.USE_SESSION = TRUE THEN        
-       dbms_application_info.set_module(pLSECTION || ' User:' || PLUSER, NULL);        
-       dbms_application_info.set_action(PLOGPARAM.getLevelInText(pLLEVEL) || ' ' ||  to_char(pLDATE, 'DD.MM.YYYY HH24:MI:SS') || '-' || pLINSTANCE); 
+       dbms_application_info.set_module(pLSECTION, pCTX.LAction);        
        dbms_application_info.set_client_info(pLTEXT);       
        
    END IF;

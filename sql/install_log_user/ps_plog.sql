@@ -534,7 +534,7 @@ RETURN PLOGPARAM.LOG_CTX;
 PROCEDURE setBeginSection
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pSECTION      IN       TLOG.LSECTION%TYPE
+    pSECTION      IN            TLOG.LSECTION%TYPE
 );
 
 
@@ -549,7 +549,26 @@ FUNCTION getSection RETURN TLOG.LSECTION%TYPE;
 PROCEDURE setEndSection
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pSECTION      IN       TLOG.LSECTION%TYPE DEFAULT 'EndAllSection'
+    pSECTION      IN            TLOG.LSECTION%TYPE DEFAULT 'EndAllSection'
+);
+
+PROCEDURE setBeginAction
+(
+    pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
+    pACTION       IN            VARCHAR2
+);
+
+
+FUNCTION getAction
+(
+    pCTX        IN PLOGPARAM.LOG_CTX
+)
+RETURN VARCHAR2;
+
+PROCEDURE setEndAction
+(
+    pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
+    pACTION       IN            VARCHAR2 DEFAULT 'EndAllAction'
 );
 
 PROCEDURE setLevel

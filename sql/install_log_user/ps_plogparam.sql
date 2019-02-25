@@ -90,6 +90,7 @@ TYPE LOG_CTX IS RECORD (
     isDefaultInit     BOOLEAN default FALSE,
     LLEVEL            TLOG.LLEVEL%TYPE,
     LSECTION          TLOG.LSECTION%TYPE,
+    LACTION           VARCHAR2(2000 BYTE), -- TODO: May be it should be added to TLOG 
     LTEXT             TLOG.LTEXT%TYPE,
     LSID              TLOG.LSID%TYPE,
     USE_LOG4J         BOOLEAN,
