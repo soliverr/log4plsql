@@ -31,6 +31,9 @@ GRANT SELECT ON SYS.V_$MYSTAT to &V_USER;
 -- grant needed to write log messages in alert.log or trace files 
 GRANT EXECUTE ON DBMS_SYSTEM TO &V_USER;  
 
+-- grant needed to write log messages into v$SESSION
+GRANT EXECUTE ON DBMS_SSESSION TO &V_USER;  
+
 -- following grant needed for the optional output 
 -- in advanded queue (AQ) consumed by the log4j background process 
 GRANT EXECUTE ON DBMS_AQ TO &V_USER;
@@ -38,5 +41,8 @@ GRANT EXECUTE ON DBMS_AQADM TO &V_USER;
 GRANT EXECUTE ON DBMS_AQIN TO &V_USER;
 GRANT EXECUTE ON DBMS_AQJMS TO &V_USER;
 
+-- store default logging parameters in system global context
+GRANT CREATE ANY CONTEXT TO &V_USER;
 
 set verify on
+

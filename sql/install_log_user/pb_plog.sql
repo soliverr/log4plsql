@@ -303,35 +303,35 @@ end;
 --******************************************************************************
 FUNCTION init
 (
-    pSECTION        IN TLOG.LSECTION%TYPE DEFAULT NULL ,
-    pLEVEL          IN TLOG.LLEVEL%TYPE DEFAULT PLOGPARAM.DEFAULT_LEVEL,
-    pLOG4J          IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_USE_LOG4J,
-    pLOGTABLE       IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_TABLE,
-    pOUT_TRANS      IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_OUT_TRANS,
-    pALERT          IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_ALERT,
-    pTRACE          IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_TRACE,
-    pDBMS_OUTPUT    IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_DBMS_OUTPUT,
-    pSESSION        IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_SESSION,
-    pDBMS_OUTPUT_WRAP IN PLS_INTEGER      DEFAULT PLOGPARAM.DEFAULT_DBMS_OUTPUT_LINE_WRAP
+    pSECTION          IN TLOG.LSECTION%TYPE DEFAULT NULL ,
+    pLEVEL            IN TLOG.LLEVEL%TYPE   DEFAULT PLOGPARAM.DEFAULT_LEVEL,
+    pLOG4J            IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_USE_LOG4J,
+    pLOGTABLE         IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_TABLE,
+    pOUT_TRANS        IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_OUT_TRANS,
+    pALERT            IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_ALERT,
+    pTRACE            IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_LOG_TRACE,
+    pDBMS_OUTPUT      IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_DBMS_OUTPUT,
+    pSESSION          IN BOOLEAN            DEFAULT PLOGPARAM.DEFAULT_SESSION,
+    pDBMS_OUTPUT_WRAP IN PLS_INTEGER        DEFAULT PLOGPARAM.DEFAULT_DBMS_OUTPUT_LINE_WRAP
 )
 RETURN PLOGPARAM.LOG_CTX
 IS
     pCTX       PLOGPARAM.LOG_CTX;
 BEGIN
 
-    pCTX.isDefaultInit   := TRUE;
-    pCTX.LSection        := nvl(pSECTION, getCallStack);
-    pCTX.LAction         := NULL;
-    pCTX.INIT_LSECTION   := pSECTION;
-    pCTX.LLEVEL          := pLEVEL;
-    pCTX.INIT_LLEVEL     := pLEVEL;
-    pCTX.USE_LOG4J       := pLOG4J;
-    pCTX.USE_OUT_TRANS   := pOUT_TRANS;
-    pCTX.USE_LOGTABLE    := pLOGTABLE;
-    pCTX.USE_ALERT       := pALERT;
-    pCTX.USE_TRACE       := pTRACE;
-    pCTX.USE_DBMS_OUTPUT := pDBMS_OUTPUT;
-    pCTX.USE_SESSION     := pSESSION;
+    pCTX.isDefaultInit    := TRUE;
+    pCTX.LSection         := nvl(pSECTION, getCallStack);
+    pCTX.LAction          := NULL;
+    pCTX.INIT_LSECTION    := pSECTION;
+    pCTX.LLEVEL           := pLEVEL;
+    pCTX.INIT_LLEVEL      := pLEVEL;
+    pCTX.USE_LOG4J        := pLOG4J;
+    pCTX.USE_OUT_TRANS    := pOUT_TRANS;
+    pCTX.USE_LOGTABLE     := pLOGTABLE;
+    pCTX.USE_ALERT        := pALERT;
+    pCTX.USE_TRACE        := pTRACE;
+    pCTX.USE_DBMS_OUTPUT  := pDBMS_OUTPUT;
+    pCTX.USE_SESSION      := pSESSION;
     pCTX.DBMS_OUTPUT_WRAP := pDBMS_OUTPUT_WRAP;
 
     begin
@@ -340,6 +340,98 @@ BEGIN
         when OTHERS
                 then NULL;
     end;
+
+    RETURN pCTX;
+
+END init;
+
+--******************************************************************************
+-- FUNCTION init
+--
+--      pCONTEXT           name of users' default global logging context
+--      pSECTION           log section
+--
+--   Public. Initializes a context with special values from users' global
+--   logging context.
+--
+--******************************************************************************
+FUNCTION init
+(
+    pCONTEXT        IN VARCHAR2,
+    pSECTION        IN TLOG.LSECTION%TYPE
+)
+RETURN PLOGPARAM.LOG_CTX
+IS
+    pCTX       PLOGPARAM.LOG_CTX;
+    pVAL       INTEGER;
+BEGIN
+    pCTX := init( pSECTION );
+
+
+    -- FIXME: It doesn't working dbms_session.list_context( lCTX_INFO, lCTX_CNT );
+
+    select nvl(sys_context( pCONTEXT,'SECTION'), pCTX.LSection) into pCTX.LSection from dual;
+    select nvl(sys_context( pCONTEXT,'INIT_SECTION'), pCTX.INIT_LSECTION) into pCTX.INIT_LSECTION from dual;
+    select nvl(sys_context( pCONTEXT,'ACTION'), pCTX.LAction) into pCTX.LAction from dual;
+    select nvl(to_number(sys_context( pCONTEXT,'LEVEL')), pCTX.LLEVEL) into pCTX.LLEVEL from dual;
+    select nvl(to_number(sys_context( pCONTEXT,'INIT_LEVEL')), pCTX.INIT_LLEVEL) into pCTX.INIT_LLEVEL from dual;
+    select nvl(to_number(sys_context( pCONTEXT,'DBMS_OUTPUT_WRAP')), pCTX.DBMS_OUTPUT_WRAP) into pCTX.DBMS_OUTPUT_WRAP from dual;
+
+    select to_number(sys_context( pCONTEXT,'USE_LOG4J' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_LOG4J := false; 
+           else pCTX.USE_LOG4J := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_OUT_TRANS' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_OUT_TRANS := false; 
+           else pCTX.USE_OUT_TRANS := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_LOGTABLE' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_LOGTABLE := false; 
+           else pCTX.USE_LOGTABLE := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_ALERT' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_ALERT := false; 
+           else pCTX.USE_ALERT := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_TRACE' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_TRACE := false; 
+           else pCTX.USE_TRACE := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_DBMS_OUTPUT' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_DBMS_OUTPUT := false; 
+           else pCTX.USE_DBMS_OUTPUT := true;
+        end if;
+    end if;
+
+    select to_number(sys_context( pCONTEXT,'USE_SESSION' )) into pVAL from dual;
+    if pVAL is NOT NULL then
+        if pVAL = 0 
+           then pCTX.USE_SESSION := false; 
+           else pCTX.USE_SESSION := true;
+        end if;
+    end if;
 
     RETURN pCTX;
 
@@ -3350,6 +3442,55 @@ BEGIN
                replace(dbms_utility.format_error_backtrace, 'ORA-06512: ', '');
      log(pLEVEL => PLOGPARAM.DEFAULT_FT_ERR_BTRACE_LEVEL, pCTX => pCTX,  pTEXT => LLTEXT );
 END full_error_backtrace;
+
+PROCEDURE createGlobalContext(
+    pCONTEXT    IN       VARCHAR2
+)
+--******************************************************************************
+--   NAME:   createGlobalContext
+--
+--  PARAMETERS:
+--
+--        pCONTEXT           name of global system context
+--
+--   Public. Create global system context to keep default logging parametes.
+--******************************************************************************
+IS
+BEGIN
+    execute immediate 'create context ' || pCONTEXT || ' using PLOG accessed globally';
+EXCEPTION
+    WHEN OTHERS THEN
+      IF SQLCODE = -955 THEN
+        NULL;
+      ELSE
+         RAISE;
+      END IF;
+END createGlobalContext;
+
+PROCEDURE setContextParameter
+(
+    pCONTEXT    IN       VARCHAR2,
+    pPARAMETER  IN       VARCHAR2,
+    pVALUE      IN       VARCHAR2
+)
+--******************************************************************************
+--   NAME:   setContextParameter
+--
+--  PARAMETERS:
+--
+--        pCONTEXT           name of global system context
+--        pPARAMETER         name of parameter:
+--                             ACTION, LEVEL, SECTION, USE_LOG4J, USE_OUT_TRANS,
+--                             USE_LOGTABLE, USE_ALERT, USE_TRACE, USE_DBMS_OUTPUT,
+--                             USE_SESSION, DBMS_OUTPUT_WRAP
+--        pVALUE             value of parameter
+--
+--   Public. Set parameter in global system context
+--******************************************************************************
+IS
+BEGIN
+   DBMS_SESSION.Set_Context( pCONTEXT, upper(pPARAMETER), to_char(pVALUE) );
+END setContextParameter;
 
 -- end of the package
 END;
