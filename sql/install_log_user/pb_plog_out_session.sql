@@ -47,11 +47,16 @@ PACKAGE BODY PLOG_OUT_SESSION AS
 --*******************************************************************************
 
 AS
+  lAction 
 BEGIN
-    IF pCTX.USE_SESSION = TRUE THEN        
-       dbms_application_info.set_module(pLSECTION, pCTX.LAction);        
+    IF pCTX.USE_SESSION = TRUE THEN
+       IF pCTX.LAction IS NULL THEN
+         lAction := PLOGPARAM.getLevelInText(pLLEVEL) || ' ' ||  to_char(pLDATE, 'DD.MM.YYYY HH24:MI:SS') || '-' || pLINSTANCE;
+       ELSE
+         lAction := pCTX.LAction;
+       END IF; 
+       dbms_application_info.set_module(pLSECTION, lAction);
        dbms_application_info.set_client_info(pLTEXT);       
-       
    END IF;
 END log;
 
