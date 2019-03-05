@@ -542,7 +542,7 @@ END setEndSection;
 PROCEDURE setBeginAction
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pACTION       IN            VARCHAR2
+    pACTION       IN            TLOG.LACTION%TYPE
 )
 IS
 BEGIN
@@ -572,7 +572,7 @@ END getAction;
 PROCEDURE setEndAction
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pACTION       IN            VARCHAR2  DEFAULT 'EndAllAction'
+    pACTION       IN            TLOG.LACTION%TYPE DEFAULT 'EndAllAction'
 )
 --******************************************************************************
 --   NAME:   setEndAction

@@ -47,7 +47,7 @@ PACKAGE BODY PLOG_OUT_SESSION AS
 --*******************************************************************************
 
 AS
-  lAction 
+    lAction         TLOG.LACTION%TYPE;
 BEGIN
     IF pCTX.USE_SESSION = TRUE THEN
        IF pCTX.LAction IS NULL THEN

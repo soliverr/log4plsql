@@ -562,7 +562,7 @@ PROCEDURE setEndSection
 PROCEDURE setBeginAction
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pACTION       IN            VARCHAR2
+    pACTION       IN            TLOG.LACTION%TYPE
 );
 
 
@@ -575,7 +575,7 @@ RETURN VARCHAR2;
 PROCEDURE setEndAction
 (
     pCTX          IN OUT NOCOPY PLOGPARAM.LOG_CTX,
-    pACTION       IN            VARCHAR2 DEFAULT 'EndAllAction'
+    pACTION       IN            TLOG.LACTION%TYPE DEFAULT 'EndAllAction'
 );
 
 PROCEDURE setLevel
